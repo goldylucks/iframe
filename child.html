@@ -1,0 +1,9 @@
+I'm inside an iframe yo!
+<input type="text" name="" id="child-input" />
+<button id='child-button'>Call parent!</button>
+
+<script type="text/javascript">
+  document.getElementById('child-button').addEventListener('click', function (evt) {
+    window.top.postMessage(document.getElementById('child-input').value, '*')
+  });
+</script>

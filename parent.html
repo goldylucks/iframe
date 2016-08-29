@@ -1,0 +1,55 @@
+<style>
+iframe {
+  margin: 0 auto;
+  width: 200px;
+  display: block;
+  border: 1px solid black;
+}
+</style>
+
+<div id='container'>
+  <iframe id='iframe' src="http://localhost:2001/child.html"></iframe>
+</div>
+
+<hr>
+<div id='message-container'>
+  Latest incoming message from iframe:
+  <div id='message'></div>
+</div>
+<hr>
+<div id='hack-container'>
+  Click the button to try to get the iframe contents from the parent. <br>
+  <button id='hack-button'>Invade Iframe!</button>
+  <div id='hack-message'></div>
+</div>
+
+<script type="text/javascript">
+
+  var iframe = el('iframe');
+  // Handle messages from iframe
+  window.onmessage = function(evt) {
+    console.log('evt', evt); // log the event for educational purposes
+    // Don't handle messages NOT from desired iframe
+    if (evt.origin !== 'http://localhost:2001') {
+      console.log('message received from non trusted origin, aborting');
+      return;
+    }
+    iframe.style.width = evt.data;
+    el('message').innerHTML = evt.data;
+  }
+
+  // try (and fail) to invade iframe
+  el('hack-button').addEventListener('click', function(evt) {
+    try {
+      var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+      el('hack-message').innerHTML = iframeDocument.getElementById('child-input').value;
+    } catch(err) {
+      el('hack-message').innerHTML = err.message;
+    }
+  });
+
+  // simple helper function to DRY
+  function el(selector) {
+    return document.getElementById(selector);
+  }
+</script>
